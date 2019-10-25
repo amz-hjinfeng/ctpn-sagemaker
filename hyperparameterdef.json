@@ -1,0 +1,45 @@
+[
+	{
+		"DefaultValue": "0",
+		"Description": "restore",
+		"IsRequired": true,
+		"IsTunable": false,
+		"Name": "restore",
+		"Range": {
+			"IntegerParameterRangeSpecification": {
+				"MaxValue": "0",
+				"MinValue": "0"
+			}
+		},
+		"Type": "Integer"
+	},
+	{
+		"DefaultValue": "50000",
+		"Description": "The second hyperparameter",
+		"IsRequired": true,
+		"IsTunable": false,
+		"Name": "max_steps",
+		"Range": {
+			"IntegerParameterRangeSpecification": {
+				"MaxValue": "50000",
+				"MinValue": "0"
+			}
+		},
+		"Type": "Integer"
+	},
+	{
+		"DefaultValue": "Adam",
+		"Description": "The third hyperparameter",
+		"IsRequired": true,
+		"IsTunable": false,
+		"Name": "SOLVER",
+		"Range": {
+			"CategoricalParameterRangeSpecification": {
+				"Values": [
+					"Adam"
+				]
+			}
+		},
+		"Type": "Categorical"
+	}
+]
