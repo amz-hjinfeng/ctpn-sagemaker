@@ -91,11 +91,10 @@ def text_detect(img):
     text_recs, img_drawed = draw_boxes(img, boxes, scale)
     return text_recs, img_drawed, img
 
-if __name__ == '__main__':
-    from PIL import Image
+
+
+def td(postImg):
     from lib.fast_rcnn.config import cfg_from_file
     cfg_from_file('./ctpn/ctpn/text.yml')
-    im = Image.open('./test_images/1.jpg')
-    img = np.array(im.convert('RGB'))
-    text_recs, img_drawed, img = text_detect(img)
-    Image.fromarray(img_drawed).save('result.jpg')
+    text_recs, img_drawed, postImg = text_detect(postImg)
+    return img_drawed

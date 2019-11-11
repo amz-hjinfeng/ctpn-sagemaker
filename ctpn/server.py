@@ -1,8 +1,11 @@
 
 from flask import Flask,render_template,request,redirect,url_for,Response
 from werkzeug.utils import secure_filename
-import text_detect
+from io import BytesIO
+from PIL import Image
+import text_detect as tdx
 import os
+import numpy as np
 
 app = Flask(__name__)
 
@@ -19,15 +22,14 @@ def detectText():
       staticFilePath = 'static/output'
       if request.method=='POST':
         f = request.files["file"]
-        base_path = os.path.abspath(os.path.dirname(__file__))
-        upload_path = os.path.join(base_path,staticFilePath)
-        if(os.path.exists(upload_path)==False):
-              os.mkdir(upload_path)
-        file_name = upload_path+'/' + secure_filename(f.filename)
-        f.save(file_name)
-        file_name =f.filename
-        
+        byte_io = BytesIO()
+        im = Image.open(f,mode='r')
+        img = np.array(im.convert('RGB'))
+        img_out = tdx.td(img)
+        return Response(img_out,mimetype="image/jpeg")
       return render_template('image_uploader.html', path = file_name)
-      
+
+
 if __name__ == '__main__':
       app.run()
+
