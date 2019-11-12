@@ -22,6 +22,7 @@ RUN apt-get install unzip -y
 #RUN apt install apt-file -y
 RUN apt-get install libsm6 -y
 RUN apt-get install libxrender1 -y
+RUN apt-get install libxext6
 
 ENV PATH="/opt/ml/code:${PATH}"
 ADD ./* /opt/ml/code/
