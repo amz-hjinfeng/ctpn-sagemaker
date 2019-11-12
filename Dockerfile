@@ -39,3 +39,5 @@ RUN rm -rf utils
 RUN cd /opt/ml/code
 WORKDIR /opt/ml/code
 
+CMD [ "sh", "load-data.sh" ]
+
