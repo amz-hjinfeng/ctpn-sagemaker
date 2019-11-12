@@ -6,3 +6,4 @@ unzip -n /opt/ml/input/data/VOCdevkit.zip -d /opt/ml/input/data/dat
 mkdir -p /opt/ml/input/data/VOCdevkit2007
 cp -r /opt/ml/input/data/dat/VOCdevkit/VOC2007/* /opt/ml/input/data/VOCdevkit2007
 rm -rf /opt/ml/input/data/dat
+cp /opt/ml/code/hyperparameters.json  /opt/ml/input/config/hyperparameters.json
