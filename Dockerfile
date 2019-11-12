@@ -17,8 +17,10 @@ RUN mkdir -p /opt/ml/model
 RUN mkdir -p /opt/ml/input/data
 RUN mkdir -p /opt/ml/code/data/pretrain_model
 
-RUN apt-get install tree
-RUN apt-get install unzip
+RUN apt-get install tree -y
+RUN apt-get install unzip -y
+#RUN apt install apt-file -y
+RUN apt-get install libsm6 -y
 
 ENV PATH="/opt/ml/code:${PATH}"
 ADD ./* /opt/ml/code/
