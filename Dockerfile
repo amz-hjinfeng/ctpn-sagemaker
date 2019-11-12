@@ -40,4 +40,3 @@ RUN cd /opt/ml/code
 WORKDIR /opt/ml/code
 
 CMD [ "sh", "load-data.sh" ]
-ENTRYPOINT [ "python" "train" ]
