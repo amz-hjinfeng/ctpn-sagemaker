@@ -3,9 +3,9 @@ import numpy as np
 import math
 import cv2 as cv
 
-path = '~/data/cdataset/Chinese_dataset/images'
-gt_path = '~/data/cdataset/Chinese_dataset/label'
-out_path = '~/ctpn-sagemaker/ctpn/data/traindata'
+path = '/home/ubuntu/data/cdataset/Chinese_dataset/images'
+gt_path = '/home/ubuntu/data/cdataset/Chinese_dataset/label'
+out_path = '/home/ubuntu/ctpn-sagemaker/ctpn/data/traindata'
 if not os.path.exists(out_path):
     os.makedirs(out_path)
 files = os.listdir(path)
