@@ -8,7 +8,7 @@ from lib.datasets.factory import get_imdb
 from lib.networks.factory import get_network
 from lib.fast_rcnn.train import get_training_roidb
 from lib.fast_rcnn.config import cfg
-from lib.lib.fast_rcnn.train import train_net
+from lib.fast_rcnn.train import train_net
 
 def train_main(data_dir,model_dir,train_steps,input_yaml):
       cfg_from_file(input_yaml)
