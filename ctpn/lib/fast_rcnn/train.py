@@ -63,16 +63,23 @@ class SolverWrapper(object):
             sess.run(biases.assign(orig_1))
 
     def build_image_summary(self):
+
         # A simple graph for write image summary
 
         log_image_data = tf.placeholder(tf.uint8, [None, None, 3])
+
         log_image_name = tf.placeholder(tf.string)
-        # import tensorflow.python.ops.gen_logging_ops as logging_ops
+
         from tensorflow.python.ops import gen_logging_ops
+
         from tensorflow.python.framework import ops as _ops
-        log_image = gen_logging_ops._image_summary(log_image_name, tf.expand_dims(log_image_data, 0), max_images=1)
+
+        log_image = tf.summary.image(str(log_image_name),
+
+            tf.expand_dims(log_image_data, 0), max_outputs=1)
+
         _ops.add_to_collection(_ops.GraphKeys.SUMMARIES, log_image)
-        # log_image = tf.summary.image(log_image_name, tf.expand_dims(log_image_data, 0), max_outputs=1)
+
         return log_image, log_image_data, log_image_name
 
 
