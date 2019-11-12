@@ -10,12 +10,12 @@ RUN pip install easydict opencv-python keras h5py PyYAML
 RUN pip install cython==0.24
 RUN pip install numpy==1.16.2
 
-RUN mkdir -P /opt/ml/input/data
-RUN mkdir -P /opt/ml/output
-RUN mkdir -P /opt/ml/input/config
-RUN mkdir -P /opt/ml/model
-RUN mkdir -P /opt/ml/input/data/VOCdevkit2007/VOC2007/ImageSets/Main
-RUN mkdir -P /opt/ml/code/ctpn/data/pretrain_model
+RUN mkdir -p /opt/ml/input/data
+RUN mkdir -p /opt/ml/output
+RUN mkdir -p /opt/ml/input/config
+RUN mkdir -p /opt/ml/model
+RUN mkdir -p /opt/ml/input/data/VOCdevkit2007/VOC2007/ImageSets/Main
+RUN mkdir -p /opt/ml/code/ctpn/data/pretrain_model
 
 
 ENV PATH="/opt/ml/code:${PATH}"
