@@ -26,10 +26,6 @@ RUN apt-get install libxext6
 
 ENV PATH="/opt/ml/code:${PATH}"
 ADD ./* /opt/ml/code/
-
-WORKDIR /opt/ml
-
-RUN tree
 WORKDIR /opt/ml/code/lib/utils
 
 RUN cython bbox.pyx
@@ -39,6 +35,7 @@ RUN mv utils/* ./
 RUN rm -rf build
 RUN rm -rf utils
 
+RUN tree /opt/ml
 
 RUN cd /opt/ml/code
 WORKDIR /opt/ml/code
