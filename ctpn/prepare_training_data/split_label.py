@@ -3,7 +3,7 @@ import numpy as np
 import math
 import cv2 as cv
 
-path = '~/data/cdataset/Chinese_dataset/image'
+path = '~/data/cdataset/Chinese_dataset/images'
 gt_path = '~/data/cdataset/Chinese_dataset/label'
 out_path = '~/ctpn-sagemaker/ctpn/data/traindata'
 if not os.path.exists(out_path):
