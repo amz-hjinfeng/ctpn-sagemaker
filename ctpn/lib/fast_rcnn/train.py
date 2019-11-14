@@ -148,49 +148,45 @@ class SolverWrapper(object):
         timer = Timer()
         deviceCount = 8
         for iter in range(restore_iter, max_iters):
-            
-            with(tf.device("/gpu:"+(iter%deviceCount))):
-                timer.tic()
-                # learning rate
-                if iter != 0 and iter % cfg.TRAIN.STEPSIZE == 0:
-                    sess.run(tf.assign(lr, lr.eval() * cfg.TRAIN.GAMMA))
-                    print(lr)
-                tf.device("gpu:"+(iter % deviceCount))
-                # get one batch
-                blobs = data_layer.forward()
+            timer.tic()
+            # learning rate
+            if iter != 0 and iter % cfg.TRAIN.STEPSIZE == 0:
+                sess.run(tf.assign(lr, lr.eval() * cfg.TRAIN.GAMMA))
+                print(lr)
+            blobs = data_layer.forward()
 
-                feed_dict={
-                    self.net.data: blobs['data'],
-                    self.net.im_info: blobs['im_info'],
-                    self.net.keep_prob: 0.5,
-                    self.net.gt_boxes: blobs['gt_boxes'],
-                    self.net.gt_ishard: blobs['gt_ishard'],
-                    self.net.dontcare_areas: blobs['dontcare_areas']
-                }
-                res_fetches=[]
-                fetch_list = [total_loss,model_loss, rpn_cross_entropy, rpn_loss_box,
-                            summary_op,
-                            train_op] + res_fetches
-
+            feed_dict={
+                self.net.data: blobs['data'],
+                self.net.im_info: blobs['im_info'],
+                self.net.keep_prob: 0.5,
+                self.net.gt_boxes: blobs['gt_boxes'],
+                self.net.gt_ishard: blobs['gt_ishard'],
+                self.net.dontcare_areas: blobs['dontcare_areas']
+            }
+            res_fetches=[]
+            fetch_list = [total_loss,model_loss, rpn_cross_entropy, rpn_loss_box,
+                        summary_op,
+                        train_op] + res_fetches
+            with(tf.device("gpu:3")):
                 total_loss_val,model_loss_val, rpn_loss_cls_val, rpn_loss_box_val, \
                     summary_str, _ = sess.run(fetches=fetch_list, feed_dict=feed_dict)
 
-                self.writer.add_summary(summary=summary_str, global_step=global_step.eval())
+            self.writer.add_summary(summary=summary_str, global_step=global_step.eval())
 
-                _diff_time = timer.toc(average=False)
+            _diff_time = timer.toc(average=False)
 
 
-                if (iter) % (cfg.TRAIN.DISPLAY) == 0:
-                    print('iter: %d / %d, total loss: %.4f, model loss: %.4f, rpn_loss_cls: %.4f, rpn_loss_box: %.4f, lr: %f'%\
-                            (iter, max_iters, total_loss_val,model_loss_val,rpn_loss_cls_val,rpn_loss_box_val,lr.eval()))
-                    print('speed: {:.3f}s / iter'.format(_diff_time))
+            if (iter) % (cfg.TRAIN.DISPLAY) == 0:
+                print('iter: %d / %d, total loss: %.4f, model loss: %.4f, rpn_loss_cls: %.4f, rpn_loss_box: %.4f, lr: %f'%\
+                        (iter, max_iters, total_loss_val,model_loss_val,rpn_loss_cls_val,rpn_loss_box_val,lr.eval()))
+                print('speed: {:.3f}s / iter'.format(_diff_time))
 
-                if (iter+1) % cfg.TRAIN.SNAPSHOT_ITERS == 0:
-                    last_snapshot_iter = iter
-                    self.snapshot(sess, iter)
-
-            if last_snapshot_iter != iter:
+            if (iter+1) % cfg.TRAIN.SNAPSHOT_ITERS == 0:
+                last_snapshot_iter = iter
                 self.snapshot(sess, iter)
+
+        if last_snapshot_iter != iter:
+            self.snapshot(sess, iter)
 
 def get_training_roidb(imdb):
     """Returns a roidb (Region of Interest database) for use in training."""
