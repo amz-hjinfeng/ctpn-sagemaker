@@ -155,7 +155,6 @@ class SolverWrapper(object):
                 if iter != 0 and iter % cfg.TRAIN.STEPSIZE == 0:
                     sess.run(tf.assign(lr, lr.eval() * cfg.TRAIN.GAMMA))
                     print(lr)
-                tf.device("gpu:"+(iter % deviceCount))
                 # get one batch
                 blobs = data_layer.forward()
 
