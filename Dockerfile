@@ -14,7 +14,6 @@ RUN mkdir -p /opt/ml/input/data
 RUN mkdir -p /opt/ml/output
 RUN mkdir -p /opt/ml/input/config
 RUN mkdir -p /opt/ml/model
-RUN mkdir -p /opt/ml/input/data
 RUN mkdir -p /opt/ml/code/data/pretrain_model
 
 RUN apt-get install tree -y

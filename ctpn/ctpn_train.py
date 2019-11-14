@@ -26,6 +26,8 @@ def train_main(data_dir,model_dir,train_steps,input_yaml):
       device_name = '/gpu:0'
       print(device_name)
 
+
+
       network = get_network('VGGnet_train')
 
       train_net(network, imdb, roidb,

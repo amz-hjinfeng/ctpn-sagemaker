@@ -19,7 +19,11 @@ def resize_im(im, scale, max_scale=None):
 
 def load_tf_model():
     # load config file
-    cfg.TEST.checkpoints_path = './ctpn/checkpoints'
+    cfg.TEST.checkpoints_path = '/Users/hjinfeng/Documents/cigna/ctpn-sagemaker/ctpn/checkpoints'
+#    for device in ['/device:gpu:1','/device:gpu:2']:
+#        with tf.device(d)
+
+
 
     # init session
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1.0)
@@ -33,11 +37,14 @@ def load_tf_model():
     print('Loading network {:s}... '.format("VGGnet_test"))
     saver = tf.train.Saver()
     try:
+        print(cfg)
         ckpt = tf.train.get_checkpoint_state(cfg.TEST.checkpoints_path)
+        print(ckpt)
         print('Restoring from {}...'.format(ckpt.model_checkpoint_path))
         saver.restore(sess, ckpt.model_checkpoint_path)
         print('done')
-    except:
+    except Exception as e:
+        print(e)
         raise 'Check your pretrained {:s}'.format(ckpt.model_checkpoint_path)
 
     return sess, net
@@ -95,6 +102,6 @@ def text_detect(img):
 
 def td(postImg):
     from lib.fast_rcnn.config import cfg_from_file
-    cfg_from_file('./ctpn/ctpn/text.yml')
+    cfg_from_file('/Users/hjinfeng/Documents/cigna/ctpn-sagemaker/ctpn/text.yml')
     text_recs, img_drawed, postImg = text_detect(postImg)
     return img_drawed

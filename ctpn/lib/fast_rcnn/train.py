@@ -10,6 +10,7 @@ from ..fast_rcnn.config import cfg
 _DEBUG = False
 
 class SolverWrapper(object):
+
     def __init__(self, sess, network, imdb, roidb, output_dir, logdir, pretrained_model=None):
         """Initialize the SolverWrapper."""
         self.net = network
@@ -146,47 +147,50 @@ class SolverWrapper(object):
         last_snapshot_iter = -1
         timer = Timer()
         for iter in range(restore_iter, max_iters):
-            timer.tic()
-            # learning rate
-            if iter != 0 and iter % cfg.TRAIN.STEPSIZE == 0:
-                sess.run(tf.assign(lr, lr.eval() * cfg.TRAIN.GAMMA))
-                print(lr)
+            
+            strategy = tf.distribute.MirroredStrategy()
+            with strategy.scope():
+                timer.tic()
+                # learning rate
+                if iter != 0 and iter % cfg.TRAIN.STEPSIZE == 0:
+                    sess.run(tf.assign(lr, lr.eval() * cfg.TRAIN.GAMMA))
+                    print(lr)
+                tf.device("gpu:"+(iter % deviceCount))
+                # get one batch
+                blobs = data_layer.forward()
 
-            # get one batch
-            blobs = data_layer.forward()
+                feed_dict={
+                    self.net.data: blobs['data'],
+                    self.net.im_info: blobs['im_info'],
+                    self.net.keep_prob: 0.5,
+                    self.net.gt_boxes: blobs['gt_boxes'],
+                    self.net.gt_ishard: blobs['gt_ishard'],
+                    self.net.dontcare_areas: blobs['dontcare_areas']
+                }
+                res_fetches=[]
+                fetch_list = [total_loss,model_loss, rpn_cross_entropy, rpn_loss_box,
+                            summary_op,
+                            train_op] + res_fetches
 
-            feed_dict={
-                self.net.data: blobs['data'],
-                self.net.im_info: blobs['im_info'],
-                self.net.keep_prob: 0.5,
-                self.net.gt_boxes: blobs['gt_boxes'],
-                self.net.gt_ishard: blobs['gt_ishard'],
-                self.net.dontcare_areas: blobs['dontcare_areas']
-            }
-            res_fetches=[]
-            fetch_list = [total_loss,model_loss, rpn_cross_entropy, rpn_loss_box,
-                          summary_op,
-                          train_op] + res_fetches
+                total_loss_val,model_loss_val, rpn_loss_cls_val, rpn_loss_box_val, \
+                    summary_str, _ = sess.run(fetches=fetch_list, feed_dict=feed_dict)
 
-            total_loss_val,model_loss_val, rpn_loss_cls_val, rpn_loss_box_val, \
-                summary_str, _ = sess.run(fetches=fetch_list, feed_dict=feed_dict)
+                self.writer.add_summary(summary=summary_str, global_step=global_step.eval())
 
-            self.writer.add_summary(summary=summary_str, global_step=global_step.eval())
-
-            _diff_time = timer.toc(average=False)
+                _diff_time = timer.toc(average=False)
 
 
-            if (iter) % (cfg.TRAIN.DISPLAY) == 0:
-                print('iter: %d / %d, total loss: %.4f, model loss: %.4f, rpn_loss_cls: %.4f, rpn_loss_box: %.4f, lr: %f'%\
-                        (iter, max_iters, total_loss_val,model_loss_val,rpn_loss_cls_val,rpn_loss_box_val,lr.eval()))
-                print('speed: {:.3f}s / iter'.format(_diff_time))
+                if (iter) % (cfg.TRAIN.DISPLAY) == 0:
+                    print('iter: %d / %d, total loss: %.4f, model loss: %.4f, rpn_loss_cls: %.4f, rpn_loss_box: %.4f, lr: %f'%\
+                            (iter, max_iters, total_loss_val,model_loss_val,rpn_loss_cls_val,rpn_loss_box_val,lr.eval()))
+                    print('speed: {:.3f}s / iter'.format(_diff_time))
 
-            if (iter+1) % cfg.TRAIN.SNAPSHOT_ITERS == 0:
-                last_snapshot_iter = iter
+                if (iter+1) % cfg.TRAIN.SNAPSHOT_ITERS == 0:
+                    last_snapshot_iter = iter
+                    self.snapshot(sess, iter)
+
+            if last_snapshot_iter != iter:
                 self.snapshot(sess, iter)
-
-        if last_snapshot_iter != iter:
-            self.snapshot(sess, iter)
 
 def get_training_roidb(imdb):
     """Returns a roidb (Region of Interest database) for use in training."""
@@ -224,9 +228,13 @@ def get_data_layer(roidb, num_classes):
 def train_net(network, imdb, roidb, output_dir, log_dir, pretrained_model=None, max_iters=40000, restore=False):
     """Train a Fast R-CNN network."""
 
+    tf.debugging.set_log_device_placement(True)
+
     config = tf.ConfigProto(allow_soft_placement=True)
     config.gpu_options.allocator_type = 'BFC'
     config.gpu_options.per_process_gpu_memory_fraction = 0.75
+    config.gpu_options.allow_growth =True
+    
     with tf.Session(config=config) as sess:
         sw = SolverWrapper(sess, network, imdb, roidb, output_dir, logdir= log_dir, pretrained_model=pretrained_model)
         print('Solving...')

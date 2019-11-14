@@ -6,6 +6,7 @@ from PIL import Image
 import text_detect as tdx
 import os
 import numpy as np
+import io
 
 app = Flask(__name__)
 
@@ -26,7 +27,10 @@ def detectText():
         im = Image.open(f,mode='r')
         img = np.array(im.convert('RGB'))
         img_out = tdx.td(img)
-        return Response(img_out,mimetype="image/jpeg")
+        imgdat= Image.fromarray(img_out)
+        fp = io.BytesIO()
+        imgdat.save(fp,'JPEG')
+        return Response(fp.getvalue(),mimetype="image/jpeg")
       return render_template('image_uploader.html', path = file_name)
 
 
