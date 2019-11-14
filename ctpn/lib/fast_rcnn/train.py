@@ -146,15 +146,16 @@ class SolverWrapper(object):
 
         last_snapshot_iter = -1
         timer = Timer()
+        deviceCount = 8
         for iter in range(restore_iter, max_iters):
             
-            strategy = tf.distribute.MirroredStrategy()
-            with strategy.scope():
+            with(tf.device("/gpu:"+(iter%deviceCount))):
                 timer.tic()
                 # learning rate
                 if iter != 0 and iter % cfg.TRAIN.STEPSIZE == 0:
                     sess.run(tf.assign(lr, lr.eval() * cfg.TRAIN.GAMMA))
                     print(lr)
+                tf.device("gpu:"+(iter % deviceCount))
                 # get one batch
                 blobs = data_layer.forward()
 
