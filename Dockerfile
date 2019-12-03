@@ -27,6 +27,7 @@ ENV PATH="/opt/ml/code:${PATH}"
 ADD ./* /opt/ml/code/
 WORKDIR /opt/ml/code/lib/utils
 
+
 RUN cython bbox.pyx
 RUN cython cython_nms.pyx
 RUN python setup_cpu.py build_ext --inplace

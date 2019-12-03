@@ -14,6 +14,5 @@ cd /opt/ml/code/
 python train
 
 
-#/opt/ml/input/data/VOCdevkit2007/VOC2007/ImageSets/Main/trainval.txt
-#/opt/ml/input/data/VOCdevkit2007/VOC2007/
+
 
