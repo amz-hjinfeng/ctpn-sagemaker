@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:1.3.0-py3
+FROM tensorflow/tensorflow:1.14.0-py3
 
 RUN apt-get update && apt-get install -y --no-install-recommends nginx curl
 RUN echo "deb [arch=amd64] http://storage.googleapis.com/tensorflow-serving-apt stable tensorflow-model-server tensorflow-model-server-universal" | tee /etc/apt/sources.list.d/tensorflow-serving.list
