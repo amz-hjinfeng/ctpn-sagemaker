@@ -146,7 +146,6 @@ class SolverWrapper(object):
 
         last_snapshot_iter = -1
         timer = Timer()
-        deviceCount = 8
         for iter in range(restore_iter, max_iters):
             timer.tic()
             # learning rate
@@ -167,8 +166,7 @@ class SolverWrapper(object):
             fetch_list = [total_loss,model_loss, rpn_cross_entropy, rpn_loss_box,
                         summary_op,
                         train_op] + res_fetches
-            with(tf.device("gpu:3")):
-                total_loss_val,model_loss_val, rpn_loss_cls_val, rpn_loss_box_val, \
+            total_loss_val,model_loss_val, rpn_loss_cls_val, rpn_loss_box_val, \
                     summary_str, _ = sess.run(fetches=fetch_list, feed_dict=feed_dict)
 
             self.writer.add_summary(summary=summary_str, global_step=global_step.eval())

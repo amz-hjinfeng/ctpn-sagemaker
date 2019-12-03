@@ -1,4 +1,4 @@
-EXP_DIR: ctpn_end2end
+EXP_DIR: /opt/ml/output/
 LOG_DIR: ctpn
 DATA_DIR: /opt/ml/input/data
 MODELS_DIR: /opt/ml/model
